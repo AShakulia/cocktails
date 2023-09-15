@@ -8,26 +8,32 @@ import { storeToRefs } from 'pinia';
 const rootStore = useRootStore();
 rootStore.getIngredients();
 
-const { ingredients, cocktails } = storeToRefs(rootStore);
-const ingredient = ref(null);
+const { ingredients, ingredient, cocktails } = storeToRefs(rootStore);
+
 
 function getCocktails() {
-  rootStore.getCocktails(ingredient.value)
+  rootStore.getCocktails(rootStore.ingredient)
+}
+
+function removeIngredient() {
+  rootStore.setIngredient(null)
 }
 </script>
 
 <template>
-  <AppLayout imgUrl="/src/assets/img/bg-1.svg">
+  <AppLayout imgUrl="/src/assets/img/bg-1.svg" :backFunc="removeIngredient" :isBackButtonVisible="!!ingredient">
     <div class="wrapper">
       <div v-if="!ingredient || !cocktails" class="info">
         <div class="title">Choose your drink</div>
         <div class="line"></div>
         <div class="select-wrapper">
           <el-select 
-            v-model="ingredient"
+            v-model="rootStore.ingredient"
             placeholder="Choose main ingredient"
             size="large"
             class="select"
+            filterable
+            allow-create
             @change="getCocktails"
           >
             <el-option
@@ -63,16 +69,7 @@ function getCocktails() {
 <style lang="scss" scoped>
 @import '../assets/styles/main.scss';
 
-.wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.info {
-  padding: 80px 0;
-  text-align: center;
-}
 
 .select-wrapper {
   padding-top: 50px;
@@ -99,7 +96,7 @@ function getCocktails() {
   flex-wrap: wrap;
   align-items: center;
   margin-top: 60px;
-  max-height: 350px;
+  max-height: 330px;
   overflow-y: auto;
 
   //прячем скроллбар
